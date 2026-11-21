@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GitHub Profile Tracker</title>
+    <meta
+      name="description"
+      content="Look up any GitHub profile and track repository stats, stars, followers and language breakdowns over time."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2358a6ff' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Ccircle cx='12' cy='12' r='2.5'/%3E%3Cpath d='M12 1.5V5M12 19v3.5M1.5 12H5M19 12h3.5'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="./">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <circle cx="12" cy="12" r="8" />
+              <circle cx="12" cy="12" r="2.5" />
+              <path d="M12 1.5V5M12 19v3.5M1.5 12H5M19 12h3.5" />
+            </svg>
+          </span>
+          <span class="brand-text">Profile<b>Tracker</b></span>
+        </a>
+
+        <form class="search" id="search-form" role="search" autocomplete="off">
+          <label class="sr-only" for="username-input">GitHub username</label>
+          <span class="search-prefix" aria-hidden="true">github.com/</span>
+          <input
+            id="username-input"
+            name="username"
+            type="text"
+            placeholder="octocat"
+            spellcheck="false"
+            autocapitalize="none"
+            autocomplete="off"
+            maxlength="120"
+            required
+          />
+          <button class="btn btn-primary" type="submit" id="search-button">Track</button>
+        </form>
+      </div>
+    </header>
+
+    <main class="wrap" id="main">
+      <section class="card welcome" id="welcome" hidden>
+        <p class="eyebrow">GitHub profile tracker</p>
+        <h1 class="welcome-title">Look up any GitHub developer, and keep an eye on the ones that matter.</h1>
+        <p class="welcome-sub">
+          Search a username to see profile details, repository stats and language mix. Every profile you look
+          up is saved in this browser, so you can come back later and see exactly how their numbers moved.
+        </p>
+
+        <div class="examples" id="examples">
+          <span class="examples-label">Try:</span>
+        </div>
+
+        <ul class="feature-list">
+          <li>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.4l2.7 5.5 6 .9-4.4 4.3 1 6-5.3-2.9-5.3 2.9 1-6-4.4-4.3 6-.9z"/></svg>
+            <span>Stars, forks and open issues across every repository returned.</span>
+          </li>
+          <li>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+            <span>Language breakdown, weighted by how many repos use each one.</span>
+          </li>
+          <li>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11a8.5 8.5 0 1 0-2.4 5.9"/><path d="M20.5 5.5V11h-5.5"/></svg>
+            <span>Tracked profiles keep a snapshot, and show you what changed on the next sync.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="card loader" id="loader" hidden aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <p id="loader-text">Fetching profile…</p>
+      </section>
+
+      <section class="card error-panel" id="error-panel" hidden role="alert">
+        <span class="error-icon" aria-hidden="true">!</span>
+        <h2 id="error-title">Something went wrong</h2>
+        <p id="error-message"></p>
+        <button class="btn btn-primary" type="button" id="retry-button" data-action="retry">Try again</button>
+      </section>
+
+      <section id="profile" hidden></section>
+
+      <section class="tracked-section" id="tracked" hidden>
+        <div class="tracked-head">
+          <h2 class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16.5 5.6a3.4 3.4 0 0 1 0 6.6M17.5 14.6A5.6 5.6 0 0 1 21 20"/></svg>
+            Tracked profiles <span class="count" id="tracked-count">0</span>
+          </h2>
+          <button class="btn btn-ghost btn-sm" type="button" id="sync-all" data-action="sync-all">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11a8.5 8.5 0 1 0-2.4 5.9"/><path d="M20.5 5.5V11h-5.5"/></svg>
+            Sync all
+          </button>
+        </div>
+        <ul class="tracked-list" id="tracked-list"></ul>
+      </section>
+    </main>
+
+    <footer class="site-footer wrap">
+      <p>Data from the GitHub profile API · Not affiliated with GitHub.</p>
+      <p class="muted">© <span id="year"></span> · Tracked profiles stay in this browser only.</p>
+    </footer>
+
+    <div class="toasts" id="toasts"></div>
+
+    <noscript>
+      <p class="wrap noscript">This tracker needs JavaScript to call the profile API.</p>
+    </noscript>
+
+    <script src="app.js"></script>
+  </body>
+</html>
